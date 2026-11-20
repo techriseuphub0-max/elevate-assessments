@@ -1,0 +1,252 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"><title>Work Stress Assessment</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one dark-teal stage matching the Mind.OS deck. Intro, ten situations one per screen, then a result with a percentage ring, five area bars and one small experiment. */
+:root{
+  --bg:#04100E; --bg2:#0B2D27; --card:rgba(255,255,255,.05); --card2:rgba(255,255,255,.09); --line:rgba(255,255,255,.15);
+  --fg:#EAF4EE; --mute:#9DB8AC; --brand:#3DCD58; --ink:#04100E;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:radial-gradient(1200px 600px at 85% 0%,var(--bg2),transparent 70%),var(--bg);color:var(--fg);font:16px/1.5 var(--body);padding-block:28px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:900px;margin:0 auto}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.12}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.kick{font:500 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--brand)}
+.mute{color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3.5vw,30px)}
+.primary{background:var(--brand);color:var(--ink);border:0;border-radius:12px;padding:13px 28px;font-weight:600}
+.primary:hover{filter:brightness(1.08)}
+.link{background:none;border:0;color:var(--brand);font-weight:600;padding:8px 4px}
+.link.m{color:var(--mute);font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.h3s{font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:10px}
+
+/* intro */
+.intro h1{font-size:clamp(36px,7vw,58px);margin:10px 0 16px}
+.statement{font-size:clamp(17px,2.4vw,20px);max-width:56ch;margin-bottom:20px}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+.facts span{font:500 12px var(--mono);border:1px solid var(--line);border-radius:99px;padding:5px 10px;color:var(--mute)}
+.tiny{font-size:12.5px;color:var(--mute);margin-top:14px}
+.namebox{margin:0 0 18px;max-width:360px}
+.namebox label{display:block;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mute);margin-bottom:6px}
+.namebox input{width:100%;background:rgba(255,255,255,.06);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--fg);font:inherit}
+.namebox input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+/* questions */
+.qwrap{max-width:760px;margin:0 auto}
+.pmeta{display:flex;justify-content:space-between;font:500 12px var(--mono);color:var(--mute);margin-bottom:8px;letter-spacing:.04em}
+.prog{height:5px;border-radius:9px;background:var(--line);overflow:hidden;margin-bottom:16px}
+.prog i{display:block;height:100%;background:var(--brand);transition:width .25s}
+.scene{font:600 clamp(21px,3.6vw,28px)/1.3 var(--display);margin:4px 0 20px;text-wrap:pretty}
+.opts{display:grid;gap:10px}
+.opts button{background:transparent;border:1.5px solid var(--line);border-radius:14px;padding:15px 16px;text-align:left;font-size:16px;line-height:1.4;transition:background .15s,border-color .15s}
+.opts button:hover{background:var(--card2);border-color:var(--brand)}
+.opts button.on{background:var(--brand);border-color:var(--brand);color:var(--ink);font-weight:600}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:6px}
+.keys{font:400 11px var(--mono);color:var(--mute)}
+@media(hover:none){.keys{display:none}}
+
+/* result */
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 14px;margin-bottom:14px}
+.rtitle{font-size:clamp(26px,4.5vw,38px);margin:4px 0 16px}
+.top{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;align-items:center}
+@media(max-width:600px){.top{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}}
+.ringwrap{position:relative;width:180px;height:180px}
+.ringwrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap .pct{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.pct b{font:700 44px/1 var(--display)}
+.pct small{font:500 11px var(--mono);color:var(--mute);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;display:block}
+.ring-fg{stroke-dasharray:339.29;transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
+.band{display:inline-block;font:600 12px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:6px 11px;background:rgba(61,205,88,.18);color:#8DE9A0;margin-bottom:10px}
+.top h2{font-size:28px;margin-bottom:6px}
+.why{border-top:1px solid var(--line);margin-top:22px;padding-top:18px}
+.why p{font-size:17px;line-height:1.65;max-width:68ch}
+.band.mod{background:rgba(242,194,48,.2);color:#F2C230}.band.hi{background:rgba(255,90,95,.2);color:#FF8A8D}.band.lo{background:rgba(61,205,88,.18);color:#8DE9A0}
+.areas{display:grid;gap:14px;margin-top:6px}
+.area{display:grid;grid-template-columns:200px minmax(0,1fr) 110px;gap:12px;align-items:center}
+@media(max-width:600px){.area{grid-template-columns:minmax(0,1fr) 100px;}.area .trk{grid-column:1 / -1;order:3}}
+.area .nm{font-weight:500}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px}
+.trk{height:10px;border-radius:9px;background:var(--line);overflow:hidden}
+.trk b{display:block;height:100%;border-radius:9px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.area .bd{font:600 12px var(--mono);text-align:right;color:var(--mute);letter-spacing:.04em}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px}
+@media(max-width:700px){.two{grid-template-columns:minmax(0,1fr)}}
+.stand{border-left:4px solid var(--c);background:var(--card2);border-radius:12px;padding:14px 16px}
+.stand .h3s{margin-bottom:4px}
+.stand p{font-size:18px;font-family:var(--display);font-weight:600}
+.exp{background:rgba(61,205,88,.1);border:1px solid rgba(61,205,88,.4);border-radius:12px;padding:14px 16px;margin-top:10px}
+.exp b{font-family:var(--display);font-size:17px;display:block;margin-bottom:2px}
+.foot{font-size:12.5px;color:var(--mute);margin-top:26px;border-top:1px solid var(--line);padding-top:12px;max-width:80ch}
+.fade{animation:fade .3s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.fade{animation:none}.ring-fg,.trk b,.prog i{transition:none}}
+@media print{
+  :root{--fg:#10241B;--mute:#4F6258;--line:#C9D4CC;--card:#fff;--card2:#fff;--brand:#1E7A36}
+  body{background:#fff;color:#10241B;padding-block:0}
+  .noprint{display:none!important}
+}
+</style>
+
+<div class="wrap"><div id="app"></div></div>
+
+<script>
+/*CORE*/
+/* Each answer is worth 0 to 3 stress points (3 = most stress). 10 questions give a maximum of 30. Stress level % = points / 30 x 100. Bands: 0-39 Low, 40-69 Moderate, 70-100 High. Area bands (2 questions, max 6): 0-2 Low, 3-4 Moderate, 5-6 High. */
+var AREAS=[
+ {k:'w',name:'Workload and deadlines',hex:'#FF8A3D',exp:'Pick the one deadline that worries you most. Write down what is still needed to finish it, and ask for a decision or help on one item today.'},
+ {k:'c',name:'Clarity and control',hex:'#3FB6E8',exp:'List what is outside your control this week and what is inside it. Choose one inside item and act on it first.'},
+ {k:'p',name:'People and support',hex:'#9B7BFF',exp:'Name one person you can ask when you are stuck. Bring them one open question this week, before it grows.'},
+ {k:'s',name:'Switching off',hex:'#F2C230',exp:'Choose one clear end-of-work signal, such as a closing note or shutting the laptop, and use it for three days.'},
+ {k:'r',name:'Reaction under pressure',hex:'#3DCD58',exp:'Next time several urgent things arrive, pause for one minute and write them in order before you reply to anyone.'}
+];
+var Q=[
+ {id:'w1',a:'w',q:'Look at your deadlines for the next two weeks. How do they feel?',o:[
+  ['Realistic, with some space left',0],['Tight, but manageable',1],['More than I can finish in normal working hours',2],['Not possible without cutting corners or working extra',3]]},
+ {id:'c1',a:'c',q:'Two stakeholders give you conflicting priorities. What usually happens?',o:[
+  ['I raise it with them and agree what comes first',0],['I sort it out, but only after a delay',1],['I wait and hope it settles by itself',2],['I try to satisfy both and end up stuck',3]]},
+ {id:'p1',a:'p',q:'You are stuck on something difficult at work. What do you usually do?',o:[
+  ['Ask a colleague or my manager fairly soon',0],['Try alone for a while, then ask',1],['Keep it to myself and hope to solve it',2],['Avoid it, as I do not know who to ask',3]]},
+ {id:'s1',a:'s',q:'It is the evening after a demanding workday. How often does work stay on your mind?',o:[
+  ['Rarely, I can usually put it down',0],['Sometimes',1],['Most evenings',2],['Almost every evening, and it is hard to switch off',3]]},
+ {id:'r1',a:'r',q:'Three urgent requests arrive within one hour. What do you usually do?',o:[
+  ['Pause, put them in order and deal with them one by one',0],['Handle them in the order they came, feeling rushed',1],['Jump between them and feel scattered',2],['Freeze or put them all off',3]]},
+ {id:'w2',a:'w',q:'Over a typical week, how often do you feel you have more to do than the time available?',o:[
+  ['Rarely',0],['In some weeks',1],['In most weeks',2],['Almost every week',3]]},
+ {id:'c2',a:'c',q:'Something important is outside your control, such as a decision from others or a dependency. How do you usually feel?',o:[
+  ['Calm, I focus on what I can influence',0],['A little uneasy, but I keep acting',1],['Frustrated, it keeps occupying my thoughts',2],['Powerless, it affects my whole day',3]]},
+ {id:'p2',a:'p',q:'When pressure is high, how do conversations with colleagues or stakeholders usually go?',o:[
+  ['Open and constructive',0],['Slightly tense',1],['Short and rushed, only about urgent things',2],['Tense, and I avoid some conversations',3]]},
+ {id:'s2',a:'s',q:'On a day off or at the weekend, how often do you check work messages?',o:[
+  ['Not unless something is truly urgent',0],['Occasionally',1],['Often',2],['Almost every day off',3]]},
+ {id:'r2',a:'r',q:'Something goes wrong in a project. What is your first reaction?',o:[
+  ['Look at the facts and plan the next step',0],['I am concerned, but I recover quickly',1],['I replay what I should have done for hours',2],['I get very tense, and it affects how I deal with others',3]]}
+];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function bandOverall(p){return p>=70?'High':p>=40?'Moderate':'Low'}
+function bandArea(pts){return pts>=5?'High':pts>=3?'Moderate':'Low'}
+var BANDTXT={
+ Low:'Your reported habits and situations suggest that work stress is not weighing heavily on you right now. Keep what works, and look at the area with the most pressure.',
+ Moderate:'You carry a noticeable amount of work stress. Some areas are well handled, and a few are worth a closer look.',
+ High:'Your reported habits and situations suggest that work stress is weighing heavily on you right now. A few small changes in the areas below could ease it.'
+};
+function score(ans){
+  var total=0,areas=AREAS.map(function(a){return {a:a,pts:0}});
+  Q.forEach(function(q){var v=ans[q.id];if(typeof v==='number'){total+=v;areas.filter(function(x){return x.a.k===q.a})[0].pts+=v}});
+  var pct=Math.round(total/30*100);
+  areas.forEach(function(x){x.band=bandArea(x.pts)});
+  var mx=Math.max.apply(null,areas.map(function(x){return x.pts})),mn=Math.min.apply(null,areas.map(function(x){return x.pts}));
+  return {total:total,pct:pct,band:bandOverall(pct),areas:areas,balanced:mx===mn,
+    top:areas.filter(function(x){return x.pts===mx}),calm:areas.filter(function(x){return x.pts===mn})};
+}
+function allAnswered(ans){return Q.every(function(q){return typeof ans[q.id]==='number'})}
+var AREA_TXT={
+ w:{Low:'your deadlines feel realistic and you rarely feel overloaded',Moderate:'your deadlines are tight but manageable, and some weeks feel overloaded',High:'your deadlines often feel like more than the time you have'},
+ c:{Low:'you tend to settle conflicting priorities and focus on what you can influence',Moderate:'you sort out priorities with some delay, and some things outside your control still weigh on you',High:'unclear priorities and things outside your control often leave you stuck or frustrated'},
+ p:{Low:'you ask for help early and your conversations stay open under pressure',Moderate:'you sometimes wait before asking for help, and conversations get tense at times',High:'you tend to carry problems alone, and conversations become tense or are avoided under pressure'},
+ s:{Low:'you can usually put work down in the evening and on days off',Moderate:'work sometimes stays on your mind or reaches your time off',High:'work often stays on your mind in the evening and reaches your time off'},
+ r:{Low:'you pause, put things in order and recover quickly when something goes wrong',Moderate:'you feel rushed or concerned at times, but you usually recover',High:'urgent requests or setbacks tend to leave you scattered, frozen or tense'}
+};
+function joinAnd(a){return a.length>1?a.slice(0,-1).join(', ')+' plus '+a[a.length-1]:a[0]}
+function explain(ans){
+  var r=score(ans),s='Your work stress level is '+r.pct+'%, which is '+r.total+' of the 30 possible points, and falls in the '+r.band+' range. '+(r.balanced&&r.band==='Low'?'Your reported habits and situations suggest that work stress is not weighing heavily on you right now. Keep what works.':BANDTXT[r.band]);
+  function line(x){return ' In '+x.a.name+', '+AREA_TXT[x.a.k][x.band]+'.'}
+  if(r.balanced){
+    s+=' Your five areas score alike, so no single area stands out. Across workload, clarity, people, switching off and reaction under pressure, your answers sit in the '+r.areas[0].band+' range.';
+  }else{
+    var t=r.top.slice(0,2),c=r.calm.slice(0,2);
+    s+=(t[0].band==='Low'?' Your highest-scoring ':' Most of your pressure comes from ')+(t[0].band==='Low'?(t.length>1?'areas are ':'area is '):'')+joinAnd(t.map(function(x){return x.a.name}))+(t[0].band==='Low'?', though '+(t.length>1?'they are':'it is')+' still in the Low range.':'.')+t.map(line).join('');
+    s+=' You seem calmest in '+joinAnd(c.map(function(x){return x.a.name}))+'.'+c.map(line).join('');
+    if(r.top.length>2||r.calm.length>2)s+=' More areas score the same as these, so start with the one that matters most to you.';
+  }
+  return s+' This reflects the situations and habits you chose for a typical working week.';
+}
+/*ENDCORE*/
+
+var S={step:'intro',qi:0,ans:{},opts:{},anim:false,name:''};
+var timer=null;
+function $(i){return document.getElementById(i)}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function newRun(){S.ans={};S.opts={};Q.forEach(function(q){S.opts[q.id]=shuffle(q.o)});S.qi=0}
+var BC={Low:'lo',Moderate:'mod',High:'hi'},RC={Low:'#3DCD58',Moderate:'#F2C230',High:'#FF5A5F'};
+
+function vIntro(){
+  return '<div class="intro fade"><span class="kick">Mind.OS · Getting Things Done</span><h1>Work stress assessment</h1>'+
+  '<p class="statement">A quick look at how much pressure you feel at work, and where it comes from. Choose what usually happens, not what you think should happen. This is a starting point for reflection, not a diagnosis.</p>'+
+  '<div class="facts"><span>10 situations</span><span>About 3 minutes</span><span>No right answers</span></div>'+
+  '<div class="namebox"><label for="nm">Your name</label><input id="nm" type="text" maxlength="40" autocomplete="off" placeholder="Type your name" value="'+esc(S.name)+'"></div>'+
+  '<button class="primary" data-act="start">Start</button>'+
+  '<p class="tiny">Your answers stay on your screen and are not saved or sent.</p></div>';
+}
+function vQ(){
+  var q=Q[S.qi],cur=S.ans[q.id];
+  var o=S.opts[q.id].map(function(x,i){return '<button type="button" data-v="'+x[1]+'" class="'+(cur===x[1]?'on':'')+'">'+esc(x[0])+'</button>'}).join('');
+  return '<div class="qwrap fade"><div class="pmeta"><span>Situation '+(S.qi+1)+' of 10</span><span>Your typical working week</span></div>'+
+  '<div class="prog"><i style="width:'+(S.qi/10*100)+'%"></i></div>'+
+  '<div class="card"><p class="scene">'+esc(q.q)+'</p><div class="opts">'+o+'</div>'+
+  '<div class="nav"><button class="link m" data-act="back">Back</button><span class="keys">Press 1 to 4 to choose</span>'+(typeof cur==='number'?'<button class="link" data-act="next">Next</button>':'<span></span>')+'</div></div></div>';
+}
+function vResult(){
+  var r=score(S.ans),C=339.29,off=C*(1-r.pct/100),col=RC[r.band];
+  var rows=r.areas.map(function(x){var w=x.pts/6*100;
+    return '<div class="area"><span class="nm"><span class="dot" style="background:'+x.a.hex+'"></span>'+x.a.name+'</span><div class="trk"><b data-w="'+w+'" style="background:'+x.a.hex+';width:0"></b></div><span class="bd">'+x.band+'</span></div>'}).join('');
+  var exps='';
+  if(r.balanced){exps='<div class="exp"><b>Try this week</b>Pick the area that matters most to you right now, and try its small experiment: '+esc(r.areas[0].a.exp)+'</div>'}
+  else{
+    exps=r.top.slice(0,2).map(function(x){return '<div class="exp"><b>Try this week: '+esc(x.a.name)+'</b>'+esc(x.a.exp)+'</div>'}).join('');
+    if(r.top.length>2)exps+='<p class="mute" style="margin-top:8px;font-size:14px">Several areas share the most pressure. Start with the one that matters most to you.</p>';
+  }
+  return '<div class="fade"><div class="bar noprint"><button class="link m" data-act="edit">Edit my answers</button><button class="link m" data-act="restart">Start again</button></div>'+
+  '<span class="kick">Your result</span><h1 class="rtitle">'+(S.name?esc(S.name)+'’s work stress assessment':'Your work stress assessment')+'</h1>'+
+  '<div class="card"><div class="top"><div class="ringwrap"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="10"/><circle id="ring" class="ring-fg" cx="60" cy="60" r="54" fill="none" stroke="'+col+'" stroke-width="10" stroke-linecap="round" style="stroke-dashoffset:'+C+'" data-off="'+off+'"/></svg>'+
+  '<div class="pct" role="img" aria-label="'+r.pct+' percent"><div><b id="pctn">'+r.pct+'%</b><small>stress level</small></div></div></div>'+
+  '<div><span class="band '+BC[r.band]+'">'+r.band+'</span><h2>Your work stress level: '+r.pct+'%</h2><p class="mute">Based on the situations and habits you reported for a typical working week.</p></div></div>'+
+  '<div class="why"><div class="h3s">Why this result</div><p>'+esc(explain(S.ans))+'</p></div></div>'+
+  '<div class="card" style="margin-top:16px"><div class="h3s">Where the pressure comes from</div><div class="areas">'+rows+'</div></div>'+
+  '<div style="margin-top:16px">'+exps+'</div>'+
+  '<p class="foot">This is a snapshot of the work situations and habits you reported. It is not a medical or psychological test and not a diagnosis. A higher percentage means more reported pressure, and much of it can come from workload, team or organisation rather than from you. If work stress feels heavy for you, consider talking with someone you trust, such as your manager, a colleague or your organisation’s support service. Your answers stay on your screen and are not saved or sent.</p></div>';
+}
+function draw(){
+  $('app').innerHTML=S.step==='intro'?vIntro():S.step==='q'?vQ():vResult();
+  if(S.step==='result'){
+    var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(function(){
+      var ring=$('ring');if(ring)ring.style.strokeDashoffset=ring.getAttribute('data-off');
+      [].forEach.call(document.querySelectorAll('.trk b'),function(b){b.style.width=b.getAttribute('data-w')+'%'});
+    },reduce?0:60);
+  }
+  window.scrollTo(0,0);
+}
+function go(s){S.step=s;draw()}
+function next(){if(S.qi<9){S.qi++;draw()}else go('result')}
+$('app').addEventListener('click',function(e){
+  var b=e.target.closest('button');if(!b)return;
+  if(b.hasAttribute('data-v')){
+    S.ans[Q[S.qi].id]=+b.getAttribute('data-v');
+    [].forEach.call(document.querySelectorAll('.opts button'),function(x){x.classList.toggle('on',x===b)});
+    clearTimeout(timer);timer=setTimeout(next,260);return;
+  }
+  var act=b.getAttribute('data-act');
+  if(act==='start'){newRun();go('q')}
+  else if(act==='next'){clearTimeout(timer);next()}
+  else if(act==='back'){clearTimeout(timer);if(S.qi>0){S.qi--;draw()}else go('intro')}
+  else if(act==='edit'){S.qi=0;go('q')}
+  else if(act==='restart'){S.ans={};go('intro')}
+});
+$('app').addEventListener('input',function(e){if(e.target.id==='nm')S.name=e.target.value.trim()});
+document.addEventListener('keydown',function(e){
+  if(S.step==='intro'&&e.key==='Enter'&&e.target&&e.target.id==='nm'){newRun();go('q');return}
+  if(S.step!=='q')return;var n=+e.key;
+  if(n>=1&&n<=4){var b=document.querySelectorAll('.opts button')[n-1];if(b)b.click()}
+});
+draw();
+</script>
+</html>
